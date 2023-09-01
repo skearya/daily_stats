@@ -20,17 +20,13 @@ impl EventHandler for Handler {
     async fn ready(&self, ctx: Context, _: Ready) {
         let channels = env::var("CHANNELS").expect("CHANNELS var not found");
         for channel in channels.split(",") {
-            count(
-                ctx.clone(),
-                channel.parse().expect("Invalid CHANNELS variable"),
-            )
-            .await;
+            count(&ctx, channel.parse().expect("Invalid CHANNELS variable")).await;
         }
         std::process::exit(0);
     }
 }
 
-async fn count(ctx: Context, channel: u64) {
+async fn count(ctx: &Context, channel: u64) {
     let channel_id = ChannelId(channel);
     let mut messages = channel_id
         .messages(&ctx.http, |retriever| retriever.limit(100))
@@ -85,7 +81,7 @@ async fn count(ctx: Context, channel: u64) {
     info.sort_by_key(|x| x.messages);
 
     let _ = channel_id
-        .send_message(ctx.http, |m| {
+        .send_message(&ctx.http, |m| {
             m.embed(|e| {
                 e.title("Active members");
                 e.color(0xe190de);
