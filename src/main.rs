@@ -76,6 +76,7 @@ async fn count(ctx: &Context, channel: u64) {
 
     let mut word_counts: Vec<(String, u32)> = Vec::from_iter(word_counts.into_iter());
     word_counts.sort_by_key(|x| x.1);
+    word_counts.reverse();
 
     let mut info: Vec<UserInfo> = info.into_values().collect();
     info.sort_by_key(|x| x.messages);
